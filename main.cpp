@@ -1,3 +1,6 @@
+#include "culia.h"
+#include "julia_animator.h"
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -13,8 +16,6 @@
 
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
-
-#include "culia.h"
 
 using namespace std;
 
@@ -76,14 +77,16 @@ int main()
 		exit(-1);
 	}
 
-	// main message loop
-	SDL_Event event;
-	unsigned int tick_prev = SDL_GetTicks();
-	for (;;) {
-		unsigned int tick_now = SDL_GetTicks();
-		unsigned int tick_diff = tick_now - tick_prev;
+	// hide mouse pointer
+	SDL_ShowCursor(SDL_DISABLE);
 
-		cuda_err = render_julia_set(cuda_renderbuffer, width, height);
+	// main message loop
+	JuliaAnimator julia_animator;
+	SDL_Event event;
+	for (;;) {
+		unsigned int tick = SDL_GetTicks();
+
+		cuda_err = render_julia_set(cuda_renderbuffer, width, height, julia_animator.get_c(tick));
 		if (cuda_err != cudaSuccess) {
 			MessageBox(NULL, (string("CUDA error: ") + cudaGetErrorString(cuda_err)).c_str(), "Error", MB_OK | MB_ICONERROR);
 			exit(-1);
