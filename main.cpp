@@ -19,7 +19,6 @@
 
 using namespace std;
 
-const int CUDA_DEVICE = 0;
 
 int main()
 {
@@ -46,8 +45,7 @@ int main()
 
 	// initialize GLEW
 	GLenum glew_err = glewInit();
-	if (GLEW_OK != glew_err)
-	{
+	if (GLEW_OK != glew_err) {
 		MessageBox(NULL, "Error initializing GLEW", "Error", MB_OK | MB_ICONERROR);
 		exit(-1);
 	}
@@ -86,6 +84,7 @@ int main()
 	for (;;) {
 		unsigned int tick = SDL_GetTicks();
 
+		// render Julia set to renderbuffer
 		cuda_err = render_julia_set(cuda_renderbuffer, width, height, julia_animator.get_c(tick));
 		if (cuda_err != cudaSuccess) {
 			MessageBox(NULL, (string("CUDA error: ") + cudaGetErrorString(cuda_err)).c_str(), "Error", MB_OK | MB_ICONERROR);
@@ -100,6 +99,7 @@ int main()
 		// swap buffers
 		SDL_GL_SwapWindow(window);
 
+		// handle SDL events
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 			case SDL_KEYUP:

@@ -8,6 +8,16 @@
 using namespace std;
 
 
+/**
+* CUDA kernel for calculating and coloring a Julia set pixel.
+* 
+* @param surface      surface object to write the output to
+* @param width        width of the surface in pixels
+* @param height       height of the surface in pixels
+* @param c_real       real part of Julia set c
+* @param c_part       imaginary part of Julia set c
+* @param sqr_bailout  squared modulus threshold for aborting the Julia set iteration
+*/
 __global__ void render_julia_set_kernel(cudaSurfaceObject_t surface, int width, int height,
     float_t c_real, float_t c_imag, float_t sqr_bailout, float_t pixel_size)
 {
@@ -18,8 +28,10 @@ __global__ void render_julia_set_kernel(cudaSurfaceObject_t surface, int width, 
 
     float_t z_real = pixel_size * (float_t(x) - float_t(width) / 2.0f);
     float_t z_imag = pixel_size * (float_t(y) - float_t(height) / 2.0f);
+
+    // perform Julia set iteration
     uint32_t i = 0;
-    for (; i < 1024; ++i) {
+    for (; i < 255; ++i) {
         float_t z_real_new = z_real * z_real - z_imag * z_imag + c_real;
         float_t z_imag_new = 2 * z_real * z_imag + c_imag;
         if (z_real_new * z_real_new + z_imag_new * z_imag_new > sqr_bailout) break;
@@ -27,9 +39,11 @@ __global__ void render_julia_set_kernel(cudaSurfaceObject_t surface, int width, 
         z_imag = z_imag_new;
     }
 
-    uint32_t data = 0xFF000000 + min(16 * i, 255) + 256*min(i, 255);
+    // write output pixel data: alpha: 255, red: min(16*i, 255), green: min(i, 255) 
+    uint32_t data = 0xFF000000 + min(16 * i, 255) + (min(i, 255) << 8);
     surf2Dwrite(data, surface, 4 * x, y);
 }
+
 
 cudaError_t render_julia_set(cudaGraphicsResource_t cuda_renderbuffer, int width, int height, complex_t c)
 {
