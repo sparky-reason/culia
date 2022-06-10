@@ -1,6 +1,8 @@
 # culia
 A CUDA accelerated Julia set animator.
 
+![Screenshot](doc/screen.png)
+
 ## Dependencies
 - CUDA (https://developer.nvidia.com/cuda-toolkit)
 - glew (http://glew.sourceforge.net/)
