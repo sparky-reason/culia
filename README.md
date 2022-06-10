@@ -1,5 +1,5 @@
 # culia
-A minimalistic CUDA accelerated Julia set animation demo.
+A minimalistic CUDA accelerated Julia set animation demonstrating CUDA-OpenGL interop for fast 2D drawing of CUDA kernel outputs.
 
 ![Screenshot](doc/screen.png)
 
