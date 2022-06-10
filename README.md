@@ -1,5 +1,5 @@
 # culia
-A CUDA accelerated Julia set animator.
+A minimalistic CUDA accelerated Julia set animation demo.
 
 ![Screenshot](doc/screen.png)
 
